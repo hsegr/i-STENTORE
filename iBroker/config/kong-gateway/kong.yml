@@ -1,0 +1,54 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+      - host: "orionld"
+        name: "orion-keycloak"
+        port: 1026
+        protocol: http
+
+        routes:
+          - name: orion-keycloak-route
+            paths:
+              - /orion-ld
+            strip_path: true
+
+        plugins:
+          - name: pep-plugin
+            config:
+              authorizationendpointtype: Keycloak
+              authorizationendpointaddress: https://iam.hse.gr
+              keycloakrealm: i-STENTORE
+              keycloakclientid: #Add your client ID here
+              keycloakclientsecret: #Add your client secret here
+              pathprefix: /orion-ld
+
+          - name: validator-plugin
+            config: 
+              ontology_url: "https://hse.gr/pub/i-stentore/ontology/v2.0/istentore-context-v2.0.jsonld"
+
+
+      - host: "mintaka"
+        name: "mintaka-keycloak"
+        port: 8080
+        protocol: http
+
+        routes:
+          - name: mintaka-keycloak-route
+            paths:
+              - /mintaka
+            strip_path: true
+
+        plugins:
+          - name: pep-plugin
+            config:
+              authorizationendpointtype: Keycloak
+              authorizationendpointaddress: https://iam.hse.gr
+              keycloakrealm: i-STENTORE
+              keycloakclientid: #Add your client ID here
+              keycloakclientsecret: #Add your client secret here
+              pathprefix: /mintaka
+          
+          - name: validator-plugin
+            config: 
+              ontology_url: "https://hse.gr/pub/i-stentore/ontology/v2.0/istentore-context-v2.0.jsonld"
