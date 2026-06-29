@@ -1,0 +1,1011 @@
+{
+  "info": {
+    "_postman_id": "ca1eb1ba-ae81-4256-b32b-78eb89880acd",
+    "name": "i-STENTORE Context Broker",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32447494"
+  },
+  "item": [
+    {
+      "name": "Keycloak Access Token",
+      "item": [
+        {
+          "name": "Token Request from Keycloak",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(pm.response.text());\r",
+                  "var keycloakAccessToken = jsonData['access_token'];\r",
+                  "pm.collectionVariables.set(\"keycloak_access_token\", keycloakAccessToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "your_client_id",
+                  "description": "Add your Client ID here",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "your_client_secret",
+                  "description": "Add your Client Secret here",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "your_username",
+                  "description": "Add your username here",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "your_password",
+                  "description": "Add your password here",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://iam.hse.gr/realms/i-STENTORE/protocol/openid-connect/token",
+              "protocol": "https",
+              "host": [
+                "iam",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "realms",
+                "i-STENTORE",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Entities API",
+      "item": [
+        {
+          "name": "Entity Creation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id\": \"urn:i-STENTORE:Demo4Temp:UFCS:001\",\r\n  \"type\": \"UFCS\",\r\n  \"category\": {\r\n    \"type\": \"Property\",\r\n    \"value\": \"EV Charging\"\r\n  },\r\n  \"chargingPower\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 150,\r\n    \"unitCode\": \"kW\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"SOC\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 40,\r\n    \"unitCode\": \"%\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"towerSOC\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 70,\r\n    \"unitCode\": \"%\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"maxCurrent\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 300,\r\n    \"unitCode\": \"A\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"voltage\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 800,\r\n    \"unitCode\": \"V\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query Entities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities?attrs=hydraulicHead&options=concise",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "urn:i-STENTORE:Demo3Temp:HydroPlant:001",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "HydroPlant",
+                  "disabled": true
+                },
+                {
+                  "key": "attrs",
+                  "value": "hydraulicHead"
+                },
+                {
+                  "key": "options",
+                  "value": "concise",
+                  "description": "concise, keyValues, normalized"
+                },
+                {
+                  "key": "geometry",
+                  "value": "Point",
+                  "description": "Supported Types: Point, LineString, Polygon",
+                  "disabled": true
+                },
+                {
+                  "key": "georel",
+                  "value": "near;maxDistance==20000",
+                  "description": "andOp = %x3B ; ;\nequal = %x3D %x3D ; ==\ngeorel = nearRel / withinRel / containsRel / overlapsRel / intersectsRel / equalsRel / disjointRel\nnearRel = nearOp andOp distance equal PositiveNumber ; near;max(min)Distance==x (in meters)\ndistance = \"maxDistance\" / \"minDistance\"\nnearOp = \"near\"\nwithinRel = \"within\"\ncontainsRel = \"contains\"\nintersectsRel = \"intersects\"\nequalsRel = \"equals\"\ndisjointRel = \"disjoint\"\noverlapsRel = \"overlaps\"",
+                  "disabled": true
+                },
+                {
+                  "key": "coordinates",
+                  "value": "[0, 0]",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Entity Retrieval by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities/{{entityId}}?options=concise",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities",
+                "{{entityId}}"
+              ],
+              "query": [
+                {
+                  "key": "options",
+                  "value": "concise",
+                  "description": "concise, keyValues, normalized"
+                },
+                {
+                  "key": "attrs",
+                  "value": "hydraulicHead",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Entity Deletion by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities/{{entityId}}",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities",
+                "{{entityId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Entity Merge by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"hydraulicHead\": {\r\n        \"type\": \"Property\",\r\n        \"value\": 100,\r\n        \"unitCode\": \"m\",\r\n        \"observedAt\": \"2025-02-25T12:00:00.000Z\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities/{{entityId}}",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities",
+                "{{entityId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Entity Replacement by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"type\": \"UFCS\",\r\n  \"category\": {\r\n    \"type\": \"Property\",\r\n    \"value\": \"EV Charging\"\r\n  },\r\n  \"chargingPower\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 150,\r\n    \"unitCode\": \"kW\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"SOC\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 40,\r\n    \"unitCode\": \"%\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"towerSOC\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 70,\r\n    \"unitCode\": \"%\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"maxCurrent\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 300,\r\n    \"unitCode\": \"A\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  },\r\n  \"voltage\": {\r\n    \"type\": \"Property\",\r\n    \"value\": 800,\r\n    \"unitCode\": \"V\",\r\n    \"observedAt\": \"2026-03-05T12:00:00Z\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain_name}}/orion-ld/ngsi-ld/v1/entities/{{entityId}}",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entities",
+                "{{entityId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Entity Operations API",
+      "item": [
+        {
+          "name": "Batch Entity Creation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:001\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:002\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/entityOperations/create",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entityOperations",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Entity Creation/Update (Upsert)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:001\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:002\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/entityOperations/upsert",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entityOperations",
+                "upsert"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Entity Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:001\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": \"urn:i-STENTORE:Demo3Temp:HydroPlant:002\",\r\n        \"type\": \"HydroPlant\",\r\n        \"category\": {\r\n            \"type\": \"Property\",\r\n            \"value\": \"Power Production\"\r\n        },\r\n        \"location\": {\r\n            \"type\": \"GeoProperty\",\r\n            \"value\": {\r\n            \"type\": \"Point\",\r\n            \"coordinates\": [0, 0] \r\n            }\r\n        },\r\n        \"ratedPower\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 2400,\r\n            \"unitCode\": \"KW\"\r\n        },\r\n        \"inflow\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 5,  \r\n            \"unitCode\": \"m3/s\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"hydraulicHead\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 12,  \r\n            \"unitCode\": \"m\",\r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"plantEfficiency\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0.85, \r\n            \"observedAt\": \"2024-09-12T12:00:00Z\"\r\n        },\r\n        \"inflowUpperLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 10,\r\n            \"unitCode\": \"m3/s\"\r\n        },\r\n        \"inflowLowerLimit\": {\r\n            \"type\": \"Property\",\r\n            \"value\": 0,\r\n            \"unitCode\": \"m3/s\"\r\n        }\r\n    }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/entityOperations/update",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "entityOperations",
+                "update"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Entity Discovery API",
+      "item": [
+        {
+          "name": "Retrieve Available Entity Types",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/types",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve Details of Available Entity Types",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/types/{{type}}",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "types",
+                "{{type}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve Available Attributes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/attributes",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "attributes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve Details of Available Attributes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "<https://hse.gr/pub/i-stentore/ontology/v1.5/orionld-context-v1.5.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://Istentore-idgm.hse.gr/orion-ld/ngsi-ld/v1/attributes/{{attrId}}",
+              "protocol": "https",
+              "host": [
+                "Istentore-idgm",
+                "hse",
+                "gr"
+              ],
+              "path": [
+                "orion-ld",
+                "ngsi-ld",
+                "v1",
+                "attributes",
+                "{{attrId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Temporal API",
+      "item": [
+        {
+          "name": "Query Temporal Evolution of Entities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{domain_name}}/mintaka/temporal/entities?lastN=3&id=urn:i-STENTORE:Demo3Temp:HydroPlant:001&type=HydroPlant&timerel=between&timeAt=2023-09-12T11:00Z&endTimeAt=2025-09-16T11:00Z&options=temporalValues",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "mintaka",
+                "temporal",
+                "entities"
+              ],
+              "query": [
+                {
+                  "key": "lastN",
+                  "value": "3"
+                },
+                {
+                  "key": "id",
+                  "value": "urn:i-STENTORE:Demo3Temp:HydroPlant:001"
+                },
+                {
+                  "key": "type",
+                  "value": "HydroPlant"
+                },
+                {
+                  "key": "attrs",
+                  "value": "hydraulicHead,inflow",
+                  "disabled": true
+                },
+                {
+                  "key": "geometry",
+                  "value": "Point",
+                  "description": "Supported Types: Point, LineString, Polygon",
+                  "disabled": true
+                },
+                {
+                  "key": "georel",
+                  "value": "near;maxDistance==20000",
+                  "description": "andOp = %x3B ; ;\nequal = %x3D %x3D ; ==\ngeorel = nearRel / withinRel / containsRel / overlapsRel / intersectsRel / equalsRel / disjointRel\nnearRel = nearOp andOp distance equal PositiveNumber ; near;max(min)Distance==x (in meters)\ndistance = \"maxDistance\" / \"minDistance\"\nnearOp = \"near\"\nwithinRel = \"within\"\ncontainsRel = \"contains\"\nintersectsRel = \"intersects\"\nequalsRel = \"equals\"\ndisjointRel = \"disjoint\"\noverlapsRel = \"overlaps\"",
+                  "disabled": true
+                },
+                {
+                  "key": "coordinates",
+                  "value": "[0, 0]",
+                  "disabled": true
+                },
+                {
+                  "key": "timerel",
+                  "value": "between"
+                },
+                {
+                  "key": "timeAt",
+                  "value": "2023-09-12T11:00Z"
+                },
+                {
+                  "key": "endTimeAt",
+                  "value": "2025-09-16T11:00Z"
+                },
+                {
+                  "key": "options",
+                  "value": "temporalValues",
+                  "description": "temporalValues,aggregatedValues"
+                },
+                {
+                  "key": "aggrMethods",
+                  "value": "max,avg",
+                  "description": "max,min,avg,sum",
+                  "disabled": true
+                },
+                {
+                  "key": "aggrPeriodDuration",
+                  "value": "PT4M",
+                  "description": "P[n]Y[n]M[n]DT[n]H[n]M[n]S or P[n]W",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Temporal Representation of Entity Retrieval by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{keycloak_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/ld+json",
+                "type": "text"
+              },
+              {
+                "key": "Link",
+                "value": "{{link_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{domain_name}}/mintaka/temporal/entities/{{entityId}}?lastN=3&timerel=between&timeAt=2023-02-15T12:00:00Z&endTimeAt=2025-05-20T12:00:00Z&options=temporalValues",
+              "host": [
+                "{{domain_name}}"
+              ],
+              "path": [
+                "mintaka",
+                "temporal",
+                "entities",
+                "{{entityId}}"
+              ],
+              "query": [
+                {
+                  "key": "lastN",
+                  "value": "3"
+                },
+                {
+                  "key": "attrs",
+                  "value": "hydraulicHead",
+                  "disabled": true
+                },
+                {
+                  "key": "timerel",
+                  "value": "between"
+                },
+                {
+                  "key": "timeAt",
+                  "value": "2023-02-15T12:00:00Z"
+                },
+                {
+                  "key": "endTimeAt",
+                  "value": "2025-05-20T12:00:00Z"
+                },
+                {
+                  "key": "options",
+                  "value": "temporalValues",
+                  "description": "temporalValues, aggregatedValues"
+                },
+                {
+                  "key": "aggrMethods",
+                  "value": "max,avg",
+                  "description": "max,min,avg,sum",
+                  "disabled": true
+                },
+                {
+                  "key": "aggrPeriodDuration",
+                  "value": "PT4M",
+                  "description": "P[n]Y[n]M[n]DT[n]H[n]M[n]S or P[n]W",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "keycloak_access_token",
+      "value": ""
+    },
+    {
+      "key": "domain_name",
+      "value": ""
+    },
+    {
+      "key": "link_header",
+      "value": ""
+    },
+    {
+      "key": "entityId",
+      "value": ""
+    },
+    {
+      "key": "attrId",
+      "value": ""
+    },
+    {
+      "key": "type",
+      "value": ""
+    }
+  ]
+}
