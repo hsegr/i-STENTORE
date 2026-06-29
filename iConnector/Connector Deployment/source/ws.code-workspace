@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+		},
+		"cSpell.words": [
+			"indy",
+			"istentore"
+		],
+		"java.compile.nullAnalysis.mode": "disabled",
+	}
+}
