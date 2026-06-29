@@ -42,5 +42,5 @@ The connector image is built from the local `source/` folder.
 ## Services
 
 - `connector-postgres`: Postgres database for connector state.
-- `weforming-connector`: Connector, Identity Hub and launcher container.
+- `istentore-connector`: Connector, Identity Hub and launcher container.
 - `dozzle`: Container log viewer, available on `${DOZZLE_PORT:-9999}`.

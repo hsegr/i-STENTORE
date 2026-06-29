@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB_NAME:-edc_store}
     networks:
-      - weforming_connector_network
+      - istentore_connector_network
     volumes: 
       - connector-postgres:/var/lib/postgresql
     healthcheck:
@@ -25,9 +25,9 @@ services:
 
   # Connector (Connector + Identity Hub + Launcher)
 
-  weforming-connector:
+  istentore-connector:
     hostname: connector
-    image: ${CONNECTOR_IMAGE:-weforming-connector}
+    image: ${CONNECTOR_IMAGE:-istentore-connector}
     build:
       context: ./source
     restart: unless-stopped
@@ -49,7 +49,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - weforming_connector_network
+      - istentore_connector_network
     volumes:
       - ./test-keys:/keys:ro
       - ./credentials:/credentials:ro
@@ -130,15 +130,15 @@ services:
     ports:
       - "${DOZZLE_PORT:-9999}:8080"
     networks:
-      - weforming_connector_network
+      - istentore_connector_network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
 # Networks
 
 networks:
-  weforming_connector_network:
-    name: wf_connector_net
+  istentore_connector_network:
+    name: istentore_connector_net
     driver: bridge
 
 # Volumes
