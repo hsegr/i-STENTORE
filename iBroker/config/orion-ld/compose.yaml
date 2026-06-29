@@ -1,0 +1,42 @@
+include:
+  - mintaka.yaml
+
+services:
+  mongodb:
+    image: mongo:${MONGO_DB_VERSION}
+    container_name: istentore_mongodb
+    volumes:
+      - ./data_mongodb:/data/db
+    ports:
+      - "${EXPOSED_MONGO_DB_PORT}:${MONGO_DB_PORT}"
+    command: --nojournal
+    restart: unless-stopped
+    networks:
+      - istentore_network
+
+  orionld:
+    image: fiware/orion-ld:${ORION_LD_VERSION}
+    container_name: istentore_orionld
+    ports:
+      - "${EXPOSED_ORION_LD_PORT}:${ORION_LD_PORT}"
+    depends_on:
+      - mongodb
+    environment:   # WHEN I ADD MINTAKA
+      - ORIONLD_TROE=TRUE
+      - ORIONLD_TROE_USER=orion
+      - ORIONLD_TROE_PWD=orion
+      - ORIONLD_TROE_HOST=timescaledb
+      - ORIONLD_MONGO_HOST=mongodb
+      - ORIONLD_MULTI_SERVICE=TRUE
+      - ORIONLD_DISABLE_FILE_LOG=TRUE 
+    command: -dbhost mongodb -logLevel DEBUG -experimental -troePoolSize 10 -forwarding 
+    restart: on-failure
+    networks:
+      - istentore_network
+
+networks:
+  istentore_network:
+    name: istentore_net
+    driver: bridge
+
+ 
