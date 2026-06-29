@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    "verbatimModuleSyntax": true,
+
+    "esModuleInterop": true,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@dataspace-connector/api-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.mjs",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "vp pack",
+    "lint": "vp lint",
+    "start": "node dist/index.mjs",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dataspace-connector/api-contract": "workspace:*",
+    "@dataspace-connector/db": "workspace:*",
+    "@dataspace-connector/domain": "workspace:*",
+    "@dataspace-connector/schemas": "workspace:*",
+    "@hono/node-server": "catalog:",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

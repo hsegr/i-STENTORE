@@ -1,0 +1,34 @@
+{
+  "name": "@dataspace-connector/monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Dimitrios Kranias",
+  "scripts": {
+    "lint": "pnpm run --parallel --recursive lint",
+    "lint:web": "pnpm --filter @dataspace-connector/client-web lint",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "prepare": "vp config",
+    "build:libs": "pnpm --filter ./libs/* run build",
+    "build:apps": "pnpm --filter ./apps/* run build",
+    "build": "pnpm run build:libs && pnpm run build:apps",
+    "dev:web": "pnpm --filter @dataspace-connector/client-web dev",
+    "dev:api": "pnpm --filter @dataspace-connector/api-server dev"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.11.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620",
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
