@@ -1,0 +1,16 @@
+{
+  "name": "@dataspace-onboarding/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "scripts": {
+    "build": "vp pack",
+    "lint": "vp lint",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "vite-plus": "catalog:"
+  }
+}
